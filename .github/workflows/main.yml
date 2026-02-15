@@ -9,20 +9,25 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
+      - name: Checkout repository WITHOUT submodules
         uses: actions/checkout@v4
         with:
-          submodules: recursive
+          submodules: false  # НЕ качаем субмодули сразу
           fetch-depth: 0
 
-      - name: Remove broken submodule
+      - name: Remove broken submodule from config
         run: |
           rm -rf libs/rust
           sed -i '/rust/d' .gitmodules || true
           git add .
-          git config --global user.email "you@example.com"
-          git config --global user.name "Your Name"
+          git config --global user.email "builder@github.com"
+          git config --global user.name "GitHub Builder"
           git commit -m "Remove broken rust submodule" || true
+
+      - name: Now fetch submodules (without rust)
+        run: |
+          git submodule sync
+          git submodule update --init --recursive || true
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
