@@ -15,6 +15,15 @@ jobs:
           submodules: recursive
           fetch-depth: 0
 
+      - name: Remove broken submodule
+        run: |
+          rm -rf libs/rust
+          sed -i '/rust/d' .gitmodules || true
+          git add .
+          git config --global user.email "you@example.com"
+          git config --global user.name "Your Name"
+          git commit -m "Remove broken rust submodule" || true
+
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
